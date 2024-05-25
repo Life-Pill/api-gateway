@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: API-GATEWAY
+
+server:
+  port: 9191
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+  cloud:
+    gateway:
+      routes:
+        - id: SUPPLIER-SERVICE
+          uri: lb://SUPPLIER-SERVICE
+          predicates:
+            - name: Path
+              args:
+                pattern: /lifepill/v1/supplier/**
+            - name: Path
+              args:
+                pattern: /lifepill/v1/supplierCompanies/**
+        - id: MAIN-SERVICE
+          uri: lb://MAIN-SERVICE
+          predicates:
+            - Path=/lifepill/v1/item/**
+            - Path=/lifepill/v1/branch/**
+            - Path=/lifepill/v1/branch-manager/**
+            - Path=/lifepill/v1/branch-summary/**
+            - Path=/lifepill/v1/cashier/**
+            - Path=/lifepill/v1/contact/**
+            - Path=/lifepill/v1/employers/**
+            - Path=/lifepill/v1/item-Category/**
+            - Path=/lifepill/v1/medicine-finding/**
+            - Path=/lifepill/v1/notices/**
+            - Path=/lifepill/v1/order/**
+            - Path=/lifepill/v1/owner/**
+            - Path=/lifepill/v1/auth/**
