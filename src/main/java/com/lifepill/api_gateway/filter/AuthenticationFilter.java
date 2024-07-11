@@ -1,5 +1,6 @@
 package com.lifepill.api_gateway.filter;
 
+import com.lifepill.api_gateway.util.JwtUtil;
 import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -15,7 +16,10 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     private RouteValidator routeValidator;
 
     @Autowired
-    private RestTemplate restTemplate;
+    private JwtUtil jwtUtil;
+
+/*    @Autowired
+    private RestTemplate restTemplate;*/
 
     public AuthenticationFilter() {
         super(Config.class);
@@ -32,12 +36,14 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                 }
 
                 String authHeaders = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
-                if (authHeaders!=null && authHeaders.startsWith("Bearer ")) {
+                if (authHeaders != null && authHeaders.startsWith("Bearer ")) {
                     authHeaders = authHeaders.substring(7);
                 }
                 try {
                     //REST call to authentication service
-                    restTemplate.getForEntity("http://authentication-service/validate?token"+authHeaders, String.class);
+//                    restTemplate.getForObject("http://authentication-service/validate?token"+authHeaders, String.class);
+                    jwtUtil.validateToken(authHeaders);
+
                 } catch (Exception e) {
 //                    exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
 //                    return exchange.getResponse().setComplete();
@@ -52,3 +58,4 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     public static class Config {
     }
 }
+//11:12

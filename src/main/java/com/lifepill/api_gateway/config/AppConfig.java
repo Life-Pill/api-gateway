@@ -1,4 +1,4 @@
-package com.lifepill.api_gateway.filter;
+package com.lifepill.api_gateway.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
