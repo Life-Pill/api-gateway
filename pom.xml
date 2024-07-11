@@ -18,6 +18,8 @@
 		<spring-cloud.version>2023.0.1</spring-cloud.version>
 		<sonar.organization>life-pill</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<dockerhub.username>pramithamj</dockerhub.username>
+		<docker.tag>v4.1.0</docker.tag>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -106,6 +108,21 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<version>3.2.1</version>
+				<configuration>
+					<to>
+						<image>${dockerhub.username}/${project.artifactId}:${docker.tag}</image>
+					</to>
+					<container>
+						<ports>
+							<port>9191</port>
+						</ports>
+					</container>
 				</configuration>
 			</plugin>
 		</plugins>
