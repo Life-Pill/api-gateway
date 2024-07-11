@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.lifepill</groupId>
 	<artifactId>api-gateway</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>v4.1.0.1</version>
 	<name>api-gateway</name>
 	<description>Pharmacy All Microservice APi Gateway</description>
 	<properties>
@@ -115,8 +115,11 @@
 				<artifactId>jib-maven-plugin</artifactId>
 				<version>3.2.1</version>
 				<configuration>
+					<from>
+						<image>eclipse-temurin:17.0.4.1_1-jre</image>
+					</from>
 					<to>
-						<image>${dockerhub.username}/${project.artifactId}:${docker.tag}</image>
+						<image>registry.hub.docker.com/${dockerhub.username}/${project.artifactId}:${docker.tag}</image>
 					</to>
 					<container>
 						<ports>
