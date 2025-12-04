@@ -152,6 +152,28 @@ spring:
                 name: branchServiceCircuitBreaker
                 fallbackUri: forward:/fallback/branch
         
+        # Branch Summary Routes (new consolidated endpoint)
+        - id: branch-service-summary
+          uri: lb://BRANCH-SERVICE
+          predicates:
+            - Path=/lifepill/v1/branch/summary/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: branchServiceCircuitBreaker
+                fallbackUri: forward:/fallback/branch
+        
+        # Branch Summary Routes (legacy/deprecated - for backward compatibility)
+        - id: branch-service-summary-legacy
+          uri: lb://BRANCH-SERVICE
+          predicates:
+            - Path=/lifepill/v1/branch-summary/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: branchServiceCircuitBreaker
+                fallbackUri: forward:/fallback/branch
+        
         # Branch Service Employer Routes
         - id: branch-service-employer
           uri: lb://BRANCH-SERVICE
