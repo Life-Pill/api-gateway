@@ -38,6 +38,15 @@ public class GatewayRouteConfig {
     @Value("${gateway.services.identity-service.name:IDENTITY-SERVICE}")
     private String identityServiceName;
 
+    @Value("${gateway.paths.identity.auth:/lifepill/v1/auth/**}")
+    private String identityAuthPath;
+
+    @Value("${gateway.paths.identity.session:/lifepill/v1/session/**}")
+    private String identitySessionPath;
+
+    @Value("${gateway.paths.identity.employer:/lifepill/v1/employer/**}")
+    private String identityEmployerPath;
+
     /**
      * Configures all gateway routes for the LifePill ecosystem.
      * 
@@ -68,9 +77,37 @@ public class GatewayRouteConfig {
                                 .addResponseHeader("X-Response-Time", String.valueOf(System.currentTimeMillis())))
                         .uri("lb://" + userAuthServiceName))
 
-                // Identity Service Direct Auth - /lifepill/v1/auth/**
+                // Identity Service Direct Auth
                 .route("identity-service-direct-auth", r -> r
-                        .path("/lifepill/v1/auth/**")
+                        .path(identityAuthPath)
+                        .filters(f -> f
+                                .circuitBreaker(c -> c
+                                        .setName("identityServiceCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/identity"))
+                                .retry(retryConfig -> retryConfig
+                                        .setRetries(retryCount)
+                                        .setStatuses(org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE,
+                                                org.springframework.http.HttpStatus.BAD_GATEWAY))
+                                .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
+                        .uri("lb://" + identityServiceName))
+
+                // Identity Service Session Routes
+                .route("identity-service-session", r -> r
+                        .path(identitySessionPath)
+                        .filters(f -> f
+                                .circuitBreaker(c -> c
+                                        .setName("identityServiceCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/identity"))
+                                .retry(retryConfig -> retryConfig
+                                        .setRetries(retryCount)
+                                        .setStatuses(org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE,
+                                                org.springframework.http.HttpStatus.BAD_GATEWAY))
+                                .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
+                        .uri("lb://" + identityServiceName))
+
+                // Identity Service Employer Routes
+                .route("identity-service-employer", r -> r
+                        .path(identityEmployerPath)
                         .filters(f -> f
                                 .circuitBreaker(c -> c
                                         .setName("identityServiceCircuitBreaker")

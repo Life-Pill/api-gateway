@@ -251,27 +251,28 @@ jwt:
                 fallbackUri: forward:/fallback/order
         
         # Identity Service - Session Management endpoints
-        # These routes have higher priority for employer session management
-        - id: identity-service-session
-          uri: lb://IDENTITY-SERVICE
-          predicates:
-            - Path=/lifepill/v1/session/logout/temporary,/lifepill/v1/session/logout/permanent,/lifepill/v1/session/authenticate/cached,/lifepill/v1/session/get-cached-employer/**,/lifepill/v1/session/get-all-cached-employers,/lifepill/v1/session/check/**
-          filters:
-            - name: CircuitBreaker
-              args:
-                name: identityServiceCircuitBreaker
-                fallbackUri: forward:/fallback/identity
+        # MOVED TO PROGRAMMATIC CONFIG (GatewayRouteConfig.java)
+        # - id: identity-service-session
+        #   uri: lb://IDENTITY-SERVICE
+        #   predicates:
+        #     - Path=/lifepill/v1/session/logout/temporary,/lifepill/v1/session/logout/permanent,/lifepill/v1/session/authenticate/cached,/lifepill/v1/session/get-cached-employer/**,/lifepill/v1/session/get-all-cached-employers,/lifepill/v1/session/check/**
+        #   filters:
+        #     - name: CircuitBreaker
+        #       args:
+        #         name: identityServiceCircuitBreaker
+        #         fallbackUri: forward:/fallback/identity
         
         # Order Service Session Routes (for other session endpoints)
-        - id: order-service-session
-          uri: lb://ORDER-SERVICE
-          predicates:
-            - Path=/lifepill/v1/session/**
-          filters:
-            - name: CircuitBreaker
-              args:
-                name: orderServiceCircuitBreaker
-                fallbackUri: forward:/fallback/order
+        # DISABLED - Identity Service handles all session endpoints
+        # - id: order-service-session
+        #   uri: lb://ORDER-SERVICE
+        #   predicates:
+        #     - Path=/lifepill/v1/session/**
+        #   filters:
+        #     - name: CircuitBreaker
+        #       args:
+        #         name: orderServiceCircuitBreaker
+        #         fallbackUri: forward:/fallback/order
         
         # Order Service Order Routes
         - id: order-service-orders
@@ -439,7 +440,14 @@ gateway:
   routes:
     auth-path: ${GATEWAY_AUTH_PATH:/api/${API_VERSION:v1}/auth/**}
     user-path: ${GATEWAY_USER_PATH:/api/${API_VERSION:v1}/user/**}
-    retry-count: ${GATEWAY_ROUTES_RETRY_COUNT:3}
+    retry-count: 3
+  
+  # Service Paths (Externalized for flexibility)
+  paths:
+    identity:
+      auth: ${IDENTITY_AUTH_PATH:/lifepill/v1/auth/**}
+      session: ${IDENTITY_SESSION_PATH:/lifepill/v1/session/**}
+      employer: ${IDENTITY_EMPLOYER_PATH:/lifepill/v1/employer/**}
   headers:
     source: ${GATEWAY_HEADER_SOURCE:lifepill-gateway}
 
