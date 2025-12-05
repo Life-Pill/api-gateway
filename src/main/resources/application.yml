@@ -48,6 +48,18 @@ jwt:
       
       # Route Definitions
       routes:
+        # IDENTITY SERVICE - DIRECT AUTH (Highest Priority)
+        - id: identity-service-direct-auth
+          uri: lb://IDENTITY-SERVICE
+          predicates:
+            # Matches /lifepill/v1/auth/authenticate and other auth endpoints
+            - Path=/lifepill/v1/auth/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: identityServiceCircuitBreaker
+                fallbackUri: forward:/fallback/identity
+
         # IDENTITY SERVICE ROUTES (Employee Authentication)
         
         # Identity Service - Auth endpoints
@@ -225,17 +237,7 @@ jwt:
         
         # ORDER SERVICE ROUTES (formerly POS System)
         
-        # Identity Service - Direct Auth endpoints (Employee Login)
-        # These routes have higher priority for employee authentication
-        - id: identity-service-direct-auth
-          uri: lb://IDENTITY-SERVICE
-          predicates:
-            - Path=/lifepill/v1/auth/authenticate,/lifepill/v1/auth/authenticate-pin,/lifepill/v1/auth/refresh-token,/lifepill/v1/auth/logout,/lifepill/v1/auth/register
-          filters:
-            - name: CircuitBreaker
-              args:
-                name: identityServiceCircuitBreaker
-                fallbackUri: forward:/fallback/identity
+
         
         # Order Service Auth Routes (for other auth endpoints)
         - id: order-service-auth

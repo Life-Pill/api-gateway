@@ -35,6 +35,9 @@ public class GatewayRouteConfig {
     @Value("${gateway.routes.retry-count:3}")
     private int retryCount;
 
+    @Value("${gateway.services.identity-service.name:IDENTITY-SERVICE}")
+    private String identityServiceName;
+
     /**
      * Configures all gateway routes for the LifePill ecosystem.
      * 
@@ -64,6 +67,20 @@ public class GatewayRouteConfig {
                                 .addRequestHeader("X-Gateway-Source", gatewayHeaderSource)
                                 .addResponseHeader("X-Response-Time", String.valueOf(System.currentTimeMillis())))
                         .uri("lb://" + userAuthServiceName))
+
+                // Identity Service Direct Auth - /lifepill/v1/auth/**
+                .route("identity-service-direct-auth", r -> r
+                        .path("/lifepill/v1/auth/**")
+                        .filters(f -> f
+                                .circuitBreaker(c -> c
+                                        .setName("identityServiceCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/identity"))
+                                .retry(retryConfig -> retryConfig
+                                        .setRetries(retryCount)
+                                        .setStatuses(org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE,
+                                                org.springframework.http.HttpStatus.BAD_GATEWAY))
+                                .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
+                        .uri("lb://" + identityServiceName))
                 
                 // User Profile Routes - /api/v1/user/**
                 .route("user-profile-service", r -> r
