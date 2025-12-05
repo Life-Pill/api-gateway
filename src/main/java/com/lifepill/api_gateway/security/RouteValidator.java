@@ -22,6 +22,10 @@ public class RouteValidator {
             "/api/v1/auth",
             // Session authenticate (PIN login)
             "/lifepill/v1/session/authenticate/cached",
+            "/lifepill/v1/session/get-cached-employer",
+            "/lifepill/v1/session/get-all-cached-employers",
+            "/lifepill/v1/session/check",
+            "/lifepill/v1/session/logout",
             // Swagger/API docs
             "/swagger-ui",
             "/v3/api-docs",
