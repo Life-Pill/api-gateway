@@ -44,9 +44,7 @@ spring:
       
       # Route Definitions
       routes:
-        # ============================================
         # IDENTITY SERVICE ROUTES (Employee Authentication)
-        # ============================================
         
         # Identity Service - Auth endpoints
         - id: identity-service-auth
@@ -83,9 +81,7 @@ spring:
                 name: identityServiceCircuitBreaker
                 fallbackUri: forward:/fallback/identity
         
-        # ============================================
         # MOBILE USER AUTH SERVICE ROUTES
-        # ============================================
         
         # User Authentication Service - Auth endpoints (versioned)
         - id: mobile-user-auth-service-auth
@@ -109,10 +105,8 @@ spring:
                 name: userAuthCircuitBreaker
                 fallbackUri: forward:/fallback/user
         
-        # ============================================
         # AUTHENTICATED PROXY ROUTES (via Order Service)
         # All branch/inventory requests go through Order Service auth first
-        # ============================================
         
         # Branch Proxy Routes (through Order Service authentication)
         - id: order-proxy-branch
@@ -135,11 +129,7 @@ spring:
               args:
                 name: orderServiceCircuitBreaker
                 fallbackUri: forward:/fallback/order
-        
-        # ============================================
-        # DIRECT SERVICE ROUTES (for internal/admin use)
-        # These can be disabled in production if needed
-        # ============================================
+
         
         # Branch Service Routes (direct - consider disabling for mobile)
         - id: branch-service
@@ -229,11 +219,21 @@ spring:
                 name: customerServiceCircuitBreaker
                 fallbackUri: forward:/fallback/customer
         
-        # ============================================
         # ORDER SERVICE ROUTES (formerly POS System)
-        # ============================================
         
-        # Order Service Auth Routes
+        # Identity Service - Direct Auth endpoints (Employee Login)
+        # These routes have higher priority for employee authentication
+        - id: identity-service-direct-auth
+          uri: lb://IDENTITY-SERVICE
+          predicates:
+            - Path=/lifepill/v1/auth/authenticate,/lifepill/v1/auth/authenticate-pin,/lifepill/v1/auth/refresh-token,/lifepill/v1/auth/logout,/lifepill/v1/auth/register
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: identityServiceCircuitBreaker
+                fallbackUri: forward:/fallback/identity
+        
+        # Order Service Auth Routes (for other auth endpoints)
         - id: order-service-auth
           uri: lb://ORDER-SERVICE
           predicates:
@@ -244,7 +244,19 @@ spring:
                 name: orderServiceCircuitBreaker
                 fallbackUri: forward:/fallback/order
         
-        # Order Service Session Routes
+        # Identity Service - Session Management endpoints
+        # These routes have higher priority for employer session management
+        - id: identity-service-session
+          uri: lb://IDENTITY-SERVICE
+          predicates:
+            - Path=/lifepill/v1/session/logout/temporary,/lifepill/v1/session/logout/permanent,/lifepill/v1/session/authenticate/cached,/lifepill/v1/session/get-cached-employer/**,/lifepill/v1/session/get-all-cached-employers,/lifepill/v1/session/check/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: identityServiceCircuitBreaker
+                fallbackUri: forward:/fallback/identity
+        
+        # Order Service Session Routes (for other session endpoints)
         - id: order-service-session
           uri: lb://ORDER-SERVICE
           predicates:
@@ -357,9 +369,7 @@ spring:
                 name: orderServiceCircuitBreaker
                 fallbackUri: forward:/fallback/order
         
-        # ============================================
         # OPENAPI/SWAGGER DOCUMENTATION ROUTES
-        # ============================================
         
         # User Auth Service - API Docs
         - id: user-auth-api-docs
