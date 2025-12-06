@@ -172,6 +172,46 @@ public class GatewayRouteConfig {
                                 .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
                         .uri("lb://BRANCH-SERVICE"))
 
+                // Inventory Service - Supplier Company Routes (higher priority - more specific path)
+                .route("inventory-service-supplier-company", r -> r
+                        .path("/lifepill/v1/supplier-company/**")
+                        .filters(f -> f
+                                .circuitBreaker(c -> c
+                                        .setName("inventoryServiceCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/inventory"))
+                                .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
+                        .uri("lb://INVENTORY-SERVICE"))
+
+                // Inventory Service - Supplier Routes (generic)
+                .route("inventory-service-suppliers", r -> r
+                        .path("/lifepill/v1/supplier/**")
+                        .filters(f -> f
+                                .circuitBreaker(c -> c
+                                        .setName("inventoryServiceCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/inventory"))
+                                .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
+                        .uri("lb://INVENTORY-SERVICE"))
+
+                // Inventory Service - Item Routes
+                .route("inventory-service-items", r -> r
+                        .path("/lifepill/v1/item/**")
+                        .filters(f -> f
+                                .circuitBreaker(c -> c
+                                        .setName("inventoryServiceCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/inventory"))
+                                .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
+                        .uri("lb://INVENTORY-SERVICE"))
+
+                // Inventory Service - Category Routes
+                .route("inventory-service-categories", r -> r
+                        .path("/lifepill/v1/category/**")
+                        .filters(f -> f
+                                .circuitBreaker(c -> c
+                                        .setName("inventoryServiceCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/inventory"))
+                                .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
+                        .uri("lb://INVENTORY-SERVICE"))
+
                 .build();
     }
 }

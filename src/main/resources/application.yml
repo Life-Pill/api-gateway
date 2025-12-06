@@ -213,11 +213,22 @@ jwt:
                 name: inventoryServiceCircuitBreaker
                 fallbackUri: forward:/fallback/inventory
         
-        # Inventory Service - Supplier Routes
+        # Inventory Service - Supplier Company Routes (higher priority - more specific path)
+        - id: inventory-service-supplier-company
+          uri: lb://INVENTORY-SERVICE
+          predicates:
+            - Path=/lifepill/v1/supplier-company/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: inventoryServiceCircuitBreaker
+                fallbackUri: forward:/fallback/inventory
+        
+        # Inventory Service - Supplier Routes (generic)
         - id: inventory-service-suppliers
           uri: lb://INVENTORY-SERVICE
           predicates:
-            - Path=/lifepill/v1/supplier/**,/lifepill/v1/supplier-company/**
+            - Path=/lifepill/v1/supplier/**
           filters:
             - name: CircuitBreaker
               args:
@@ -583,6 +594,12 @@ management:
       percentiles-histogram:
         http.server.requests: true
         resilience4j.circuitbreaker.calls: true
+  tracing:
+    sampling:
+      probability: ${TRACING_SAMPLING_PROBABILITY:1.0}  # Sample all requests (100%)
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_ENDPOINT:http://localhost:9411/api/v2/spans}
 
 # Application Info
 info:
