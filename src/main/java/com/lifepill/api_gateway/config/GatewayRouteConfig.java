@@ -151,7 +151,27 @@ public class GatewayRouteConfig {
                         .path("/config/**")
                         .filters(f -> f.rewritePath("/config/(?<segment>.*)", "/${segment}"))
                         .uri("lb://" + configServerName))
-                
+
+                // Branch Service Routes
+                .route("branch-service", r -> r
+                        .path("/lifepill/v1/branch/**")
+                        .filters(f -> f
+                                .circuitBreaker(c -> c
+                                        .setName("branchServiceCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/branch"))
+                                .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
+                        .uri("lb://BRANCH-SERVICE"))
+
+                // Branch Manager Routes
+                .route("branch-manager-service", r -> r
+                        .path("/lifepill/v1/branch-manager/**")
+                        .filters(f -> f
+                                .circuitBreaker(c -> c
+                                        .setName("branchManagerServiceCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/branch"))
+                                .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
+                        .uri("lb://BRANCH-SERVICE"))
+
                 .build();
     }
 }
