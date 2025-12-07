@@ -103,7 +103,7 @@ jwt:
         - id: mobile-user-auth-service-auth
           uri: lb://${GATEWAY_USER_AUTH_SERVICE:MOBILE-USER-AUTH-SERVICE}
           predicates:
-            - Path=/api/${API_VERSION:v1}/auth/**
+            - Path=/api/${API_VERSION:v1}/user/auth/**
           filters:
             - name: CircuitBreaker
               args:

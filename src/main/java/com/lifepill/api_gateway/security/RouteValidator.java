@@ -20,6 +20,7 @@ public class RouteValidator {
             "/lifepill/v1/auth",
             "/lifepill/v1/identity/auth",
             "/api/v1/auth",
+            "/api/v1/user/auth",  // Mobile user auth endpoints
             // Session authenticate (PIN login)
             "/lifepill/v1/session/authenticate/cached",
             "/lifepill/v1/session/get-cached-employer",
