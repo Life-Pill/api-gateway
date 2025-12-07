@@ -21,6 +21,11 @@ public class RouteValidator {
             "/lifepill/v1/identity/auth",
             "/api/v1/auth",
             "/api/v1/user/auth",  // Mobile user auth endpoints
+            // Password reset endpoints (public - no auth required)
+            "/lifepill/v1/employer/forgot-password",
+            "/lifepill/v1/employer/reset-password",
+            "/lifepill/v1/identity/employer/forgot-password",
+            "/lifepill/v1/identity/employer/reset-password",
             // Session authenticate (PIN login)
             "/lifepill/v1/session/authenticate/cached",
             "/lifepill/v1/session/get-cached-employer",
