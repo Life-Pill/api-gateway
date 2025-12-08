@@ -246,10 +246,31 @@ jwt:
                 name: customerServiceCircuitBreaker
                 fallbackUri: forward:/fallback/customer
         
+        # Mobile API Routes (Patient Customer Service)
+        - id: patient-customer-mobile-api
+          uri: lb://PATIENT-CUSTOMER-SERVICE
+          predicates:
+            - Path=/lifepill/v1/mobile/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: customerServiceCircuitBreaker
+                fallbackUri: forward:/fallback/customer
+        
+        # Prescription Image Routes (Patient Customer Service)
+        - id: patient-customer-prescription-images
+          uri: lb://PATIENT-CUSTOMER-SERVICE
+          predicates:
+            - Path=/prescriptionImages/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: customerServiceCircuitBreaker
+                fallbackUri: forward:/fallback/customer
+        
         # ORDER SERVICE ROUTES (formerly POS System)
         
 
-        
         # Order Service Auth Routes (for other auth endpoints)
         - id: order-service-auth
           uri: lb://ORDER-SERVICE
