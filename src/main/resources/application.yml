@@ -483,11 +483,11 @@ circuitbreaker:
 
 # CORS Configuration - Externalized
 cors:
-  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:8081,https://35.208.197.159,http://35.208.197.159}
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:*}
   allowed-methods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,PATCH,DELETE,OPTIONS}
   allowed-headers: ${CORS_ALLOWED_HEADERS:Authorization,Content-Type,Accept,Origin,X-Requested-With,X-XSRF-TOKEN,X-Gateway-Source}
   exposed-headers: ${CORS_EXPOSED_HEADERS:Authorization,X-Response-Time,X-Request-Id}
-  allow-credentials: ${CORS_ALLOW_CREDENTIALS:true}
+  allow-credentials: ${CORS_ALLOW_CREDENTIALS:false}
   max-age: ${CORS_MAX_AGE:3600}
 
 # Eureka Client Configuration
