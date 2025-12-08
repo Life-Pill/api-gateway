@@ -575,11 +575,11 @@ resilience4j:
       branchServiceCircuitBreaker:
         timeout-duration: ${TL_TIMEOUT:5s}
       inventoryServiceCircuitBreaker:
-        timeout-duration: ${TL_TIMEOUT:5s}
+        timeout-duration: ${TL_INVENTORY_TIMEOUT:30s}
       customerServiceCircuitBreaker:
         timeout-duration: ${TL_TIMEOUT:5s}
       identityServiceCircuitBreaker:
-        timeout-duration: ${TL_IDENTITY_TIMEOUT:10s}
+        timeout-duration: ${TL_IDENTITY_TIMEOUT:30s}
       orderServiceCircuitBreaker:
         timeout-duration: ${TL_ORDER_TIMEOUT:10s}
 
