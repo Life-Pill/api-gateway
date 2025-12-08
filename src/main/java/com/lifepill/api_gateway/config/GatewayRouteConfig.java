@@ -212,6 +212,26 @@ public class GatewayRouteConfig {
                                 .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
                         .uri("lb://INVENTORY-SERVICE"))
 
+                // Order Service Routes
+                .route("order-service-orders", r -> r
+                        .path("/lifepill/v1/order/**")
+                        .filters(f -> f
+                                .circuitBreaker(c -> c
+                                        .setName("orderServiceCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/order"))
+                                .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
+                        .uri("lb://ORDER-SERVICE"))
+
+                // Sales Service Routes (part of Order Service)
+                .route("order-service-sales", r -> r
+                        .path("/lifepill/v1/sales/**")
+                        .filters(f -> f
+                                .circuitBreaker(c -> c
+                                        .setName("orderServiceCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/order"))
+                                .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
+                        .uri("lb://ORDER-SERVICE"))
+
                 .build();
     }
 }
