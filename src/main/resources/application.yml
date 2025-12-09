@@ -180,16 +180,28 @@ jwt:
                 name: branchServiceCircuitBreaker
                 fallbackUri: forward:/fallback/branch
         
-        # Branch Service Employer Routes
-        - id: branch-service-employer
-          uri: lb://BRANCH-SERVICE
+        # Identity Service Employer Routes (singular path)
+        - id: identity-service-employer-direct
+          uri: lb://IDENTITY-SERVICE
           predicates:
             - Path=/lifepill/v1/employer/**
           filters:
             - name: CircuitBreaker
               args:
-                name: branchServiceCircuitBreaker
-                fallbackUri: forward:/fallback/branch
+                name: identityServiceCircuitBreaker
+                fallbackUri: forward:/fallback/identity
+        
+        # Identity Service Employer Routes (plural path - rewrites to singular)
+        - id: identity-service-employers-plural
+          uri: lb://IDENTITY-SERVICE
+          predicates:
+            - Path=/lifepill/v1/employers/**
+          filters:
+            - RewritePath=/lifepill/v1/employers/(?<segment>.*), /lifepill/v1/employer/${segment}
+            - name: CircuitBreaker
+              args:
+                name: identityServiceCircuitBreaker
+                fallbackUri: forward:/fallback/identity
         
         # Inventory Service - Item Routes (direct - consider disabling for mobile)
         - id: inventory-service-items
@@ -568,20 +580,20 @@ resilience4j:
   timelimiter:
     configs:
       default:
-        timeout-duration: ${TL_TIMEOUT:5s}
+        timeout-duration: ${TL_TIMEOUT:30s}
     instances:
       userAuthCircuitBreaker:
-        timeout-duration: ${TL_AUTH_TIMEOUT:10s}
+        timeout-duration: ${TL_AUTH_TIMEOUT:30s}
       branchServiceCircuitBreaker:
-        timeout-duration: ${TL_TIMEOUT:5s}
+        timeout-duration: ${TL_TIMEOUT:30s}
       inventoryServiceCircuitBreaker:
         timeout-duration: ${TL_INVENTORY_TIMEOUT:30s}
       customerServiceCircuitBreaker:
-        timeout-duration: ${TL_TIMEOUT:5s}
+        timeout-duration: ${TL_TIMEOUT:30s}
       identityServiceCircuitBreaker:
         timeout-duration: ${TL_IDENTITY_TIMEOUT:30s}
       orderServiceCircuitBreaker:
-        timeout-duration: ${TL_ORDER_TIMEOUT:10s}
+        timeout-duration: ${TL_ORDER_TIMEOUT:30s}
 
 # Actuator Configuration for Production Monitoring
 management:
