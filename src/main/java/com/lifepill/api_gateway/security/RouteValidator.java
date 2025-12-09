@@ -106,7 +106,10 @@ public class RouteValidator {
             Map.entry("/lifepill/v1/customer", new PathRoleConfig("USER", null)),
             
             // Mobile User API - Allow authenticated access without role enforcement
-            Map.entry("/api/v1/user", new PathRoleConfig(null, null))
+            Map.entry("/api/v1/user", new PathRoleConfig(null, null)),
+            
+            // Mobile Medicine Search - Allow authenticated access without role enforcement
+            Map.entry("/lifepill/v1/mobile", new PathRoleConfig(null, null))
     );
 
     /**
