@@ -232,6 +232,20 @@ public class GatewayRouteConfig {
                                 .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
                         .uri("lb://ORDER-SERVICE"))
 
+                // Customer Service - Mobile API Routes
+                .route("customer-service-mobile", r -> r
+                        .path("/lifepill/v1/mobile/**")
+                        .filters(f -> f
+                                .circuitBreaker(c -> c
+                                        .setName("customerServiceCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/customer"))
+                                .retry(retryConfig -> retryConfig
+                                        .setRetries(retryCount)
+                                        .setStatuses(org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE,
+                                                org.springframework.http.HttpStatus.BAD_GATEWAY))
+                                .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
+                        .uri("lb://CUSTOMER-SERVICE"))
+
                 .build();
     }
 }
