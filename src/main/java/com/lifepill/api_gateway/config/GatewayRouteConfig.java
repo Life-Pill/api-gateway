@@ -246,6 +246,37 @@ public class GatewayRouteConfig {
                                 .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
                         .uri("lb://CUSTOMER-SERVICE"))
 
+                // Prescription Service Routes
+                .route("prescription-service-upload", r -> r
+                        .path("/lifepill/v1/prescription/**")
+                        .filters(f -> f
+                                .circuitBreaker(c -> c
+                                        .setName("prescriptionServiceCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/prescription"))
+                                .retry(retryConfig -> retryConfig
+                                        .setRetries(retryCount)
+                                        .setStatuses(org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE,
+                                                org.springframework.http.HttpStatus.BAD_GATEWAY))
+                                .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
+                        .uri("lb://PRESCRIPTION-SERVICE"))
+
+                // Notification Service WebSocket - Pass through without modification
+                .route("notification-websocket", r -> r
+                        .path("/ws/**")
+                        .filters(f -> f
+                                .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
+                        .uri("lb://NOTIFICATION-SERVICE"))
+
+                // Notification Service REST API
+                .route("notification-service-api", r -> r
+                        .path("/lifepill/v1/notification/**")
+                        .filters(f -> f
+                                .circuitBreaker(c -> c
+                                        .setName("notificationServiceCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/notification"))
+                                .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
+                        .uri("lb://NOTIFICATION-SERVICE"))
+
                 .build();
     }
 }
