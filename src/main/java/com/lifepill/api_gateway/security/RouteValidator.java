@@ -112,7 +112,10 @@ public class RouteValidator {
             Map.entry("/lifepill/v1/mobile", new PathRoleConfig(null, null)),
             
             // Prescription Service - User authenticated access
-            Map.entry("/lifepill/v1/prescription", new PathRoleConfig("USER", null))
+            Map.entry("/lifepill/v1/prescription", new PathRoleConfig("USER", null)),
+            
+            // Mobile Orders - User authenticated access
+            Map.entry("/lifepill/v1/mobile/orders", new PathRoleConfig("USER", null))
     );
 
     /**

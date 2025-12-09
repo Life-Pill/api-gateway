@@ -277,6 +277,16 @@ public class GatewayRouteConfig {
                                 .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
                         .uri("lb://NOTIFICATION-SERVICE"))
 
+                // Mobile Orders API (Customer Service)
+                .route("mobile-orders-api", r -> r
+                        .path("/lifepill/v1/mobile/orders/**")
+                        .filters(f -> f
+                                .circuitBreaker(c -> c
+                                        .setName("mobileOrdersCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/customer"))
+                                .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
+                        .uri("lb://CUSTOMER-SERVICE"))
+
                 .build();
     }
 }
