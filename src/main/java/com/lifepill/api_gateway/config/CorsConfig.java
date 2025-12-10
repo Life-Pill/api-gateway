@@ -42,6 +42,7 @@ public class CorsConfig {
     /**
      * Configures CORS for the API Gateway.
      * This configuration applies to all routes passing through the gateway.
+     * Gateway is the ONLY source of CORS headers - downstream services must not add CORS.
      * 
      * @return CorsWebFilter with production-ready CORS settings
      */
@@ -49,26 +50,34 @@ public class CorsConfig {
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration corsConfig = new CorsConfiguration();
         
-        // Allowed origins from environment
-        corsConfig.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
+        // Use allowedOriginPatterns instead of allowedOrigins to support credentials with wildcards
+        if (allowedOrigins.equals("*")) {
+            corsConfig.addAllowedOriginPattern("*");
+        } else {
+            Arrays.stream(allowedOrigins.split(",")).forEach(corsConfig::addAllowedOrigin);
+        }
+        
+        // Always allow "null" origin for local file testing (file://)
+        corsConfig.addAllowedOrigin("null");
         
         // Allowed HTTP methods from environment
         corsConfig.setAllowedMethods(Arrays.asList(allowedMethods.split(",")));
         
-        // Allowed headers from environment
-        List<String> headers = Arrays.asList(allowedHeaders.split(","));
-        corsConfig.setAllowedHeaders(headers);
+        // Allow all headers for WebSocket
+        corsConfig.addAllowedHeader("*");
         
         // Exposed headers from environment
         corsConfig.setExposedHeaders(Arrays.asList(exposedHeaders.split(",")));
         
-        // Allow credentials (cookies, authorization headers)
+        // Configure credentials support from environment
         corsConfig.setAllowCredentials(allowCredentials);
         
         // Cache preflight response
         corsConfig.setMaxAge(maxAge);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // Apply CORS to ALL paths including WebSocket paths
+        // Gateway is the ONLY source of CORS headers - downstream services must NOT add CORS
         source.registerCorsConfiguration("/**", corsConfig);
         
         return new CorsWebFilter(source);

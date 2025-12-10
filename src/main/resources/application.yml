@@ -5,6 +5,10 @@
 
 server:
   port: ${API_GATEWAY_PORT:9191}
+  # Netty configuration for WebSocket support
+  netty:
+    connection-timeout: 30s
+    idle-timeout: 60s
 
 spring:
   application:
@@ -32,9 +36,19 @@ jwt:
           enabled: true
           lower-case-service-id: false
       
+      # HttpClient configuration for WebSocket support
+      httpclient:
+        websocket:
+          max-frame-payload-length: 1048576
+        connect-timeout: 30000
+        response-timeout: 30s
+      
       # Default Filters applied to all routes
       default-filters:
-        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+        - name: DedupeResponseHeader
+          args:
+            name: Access-Control-Allow-Credentials Access-Control-Allow-Origin
+            strategy: RETAIN_FIRST
         - name: Retry
           args:
             retries: ${GATEWAY_RETRY_ATTEMPTS:3}
@@ -48,6 +62,19 @@ jwt:
       
       # Route Definitions
       routes:
+        # WEBSOCKET ROUTE - HIGHEST PRIORITY (must be first)
+        - id: notification-websocket
+          uri: lb:ws://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/ws/**
+          filters:
+            - PreserveHostHeader
+            - RemoveRequestHeader=Sec-WebSocket-Extensions
+          metadata:
+            connect-timeout: 30000
+            response-timeout: 30000
+          order: -1
+        
         # IDENTITY SERVICE - DIRECT AUTH (Highest Priority)
         - id: identity-service-direct-auth
           uri: lb://IDENTITY-SERVICE
@@ -440,17 +467,6 @@ jwt:
           uri: lb://NOTIFICATION-SERVICE
           predicates:
             - Path=/api/v1/notifications/**
-          filters:
-            - name: CircuitBreaker
-              args:
-                name: notificationServiceCircuitBreaker
-                fallbackUri: forward:/fallback/notification
-        
-        # Notification Service - WebSocket Endpoint
-        - id: notification-websocket
-          uri: lb:ws://NOTIFICATION-SERVICE
-          predicates:
-            - Path=/ws/**
           filters:
             - name: CircuitBreaker
               args:
