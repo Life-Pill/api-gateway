@@ -215,6 +215,52 @@ public class FallbackController {
     }
 
     /**
+     * Prescription service fallback handler.
+     * Handles ALL HTTP methods for prescription endpoints including image uploads.
+     * 
+     * @param exchange ServerWebExchange to extract request details
+     * @return Mono<ResponseEntity<Map<String, Object>>> with prescription service error
+     */
+    @RequestMapping(value = "/prescription", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ResponseEntity<Map<String, Object>>> prescriptionFallback(ServerWebExchange exchange) {
+        String method = exchange.getRequest().getMethod().name();
+        String path = exchange.getRequest().getPath().value();
+        log.warn("Prescription service fallback triggered - prescription service unavailable. Method: {}, Path: {}", method, path);
+        
+        Map<String, Object> response = createFallbackResponse(
+                "PRESCRIPTION_SERVICE_UNAVAILABLE",
+                "Prescription service is temporarily unavailable. Please try again later.",
+                "prescription",
+                path
+        );
+        
+        return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response));
+    }
+
+    /**
+     * Notification service fallback handler.
+     * Handles ALL HTTP methods for notification and WebSocket endpoints.
+     * 
+     * @param exchange ServerWebExchange to extract request details
+     * @return Mono<ResponseEntity<Map<String, Object>>> with notification service error
+     */
+    @RequestMapping(value = "/notification", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ResponseEntity<Map<String, Object>>> notificationFallback(ServerWebExchange exchange) {
+        String method = exchange.getRequest().getMethod().name();
+        String path = exchange.getRequest().getPath().value();
+        log.warn("Notification service fallback triggered - notification service unavailable. Method: {}, Path: {}", method, path);
+        
+        Map<String, Object> response = createFallbackResponse(
+                "NOTIFICATION_SERVICE_UNAVAILABLE",
+                "Notification service is temporarily unavailable. Please try again later.",
+                "notification",
+                path
+        );
+        
+        return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response));
+    }
+
+    /**
      * Rate limit exceeded fallback.
      * Handles ALL HTTP methods.
      * 

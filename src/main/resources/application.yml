@@ -420,6 +420,43 @@ jwt:
                 name: orderServiceCircuitBreaker
                 fallbackUri: forward:/fallback/order
         
+        # PRESCRIPTION SERVICE ROUTES
+        
+        # Prescription Service - Main Routes
+        - id: prescription-service
+          uri: lb://PRESCRIPTION-SERVICE
+          predicates:
+            - Path=/lifepill/v1/prescription/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: prescriptionServiceCircuitBreaker
+                fallbackUri: forward:/fallback/prescription
+        
+        # NOTIFICATION SERVICE ROUTES
+        
+        # Notification Service - REST Endpoints
+        - id: notification-service
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/api/v1/notifications/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: notificationServiceCircuitBreaker
+                fallbackUri: forward:/fallback/notification
+        
+        # Notification Service - WebSocket Endpoint
+        - id: notification-websocket
+          uri: lb:ws://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/ws/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: notificationServiceCircuitBreaker
+                fallbackUri: forward:/fallback/notification
+        
         # OPENAPI/SWAGGER DOCUMENTATION ROUTES
         
         # User Auth Service - API Docs
@@ -576,6 +613,10 @@ resilience4j:
         wait-duration-in-open-state: ${CB_ORDER_WAIT_DURATION:15s}
       defaultCircuitBreaker:
         base-config: default
+      prescriptionServiceCircuitBreaker:
+        base-config: default
+      notificationServiceCircuitBreaker:
+        base-config: default
   
   timelimiter:
     configs:
@@ -594,6 +635,10 @@ resilience4j:
         timeout-duration: ${TL_IDENTITY_TIMEOUT:30s}
       orderServiceCircuitBreaker:
         timeout-duration: ${TL_ORDER_TIMEOUT:30s}
+      prescriptionServiceCircuitBreaker:
+        timeout-duration: ${TL_TIMEOUT:30s}
+      notificationServiceCircuitBreaker:
+        timeout-duration: ${TL_TIMEOUT:30s}
 
 # Actuator Configuration for Production Monitoring
 management:

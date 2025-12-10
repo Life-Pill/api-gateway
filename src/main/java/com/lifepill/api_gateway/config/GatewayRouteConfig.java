@@ -269,7 +269,7 @@ public class GatewayRouteConfig {
 
                 // Notification Service REST API
                 .route("notification-service-api", r -> r
-                        .path("/lifepill/v1/notification/**")
+                        .path("/api/v1/notifications/**")
                         .filters(f -> f
                                 .circuitBreaker(c -> c
                                         .setName("notificationServiceCircuitBreaker")
