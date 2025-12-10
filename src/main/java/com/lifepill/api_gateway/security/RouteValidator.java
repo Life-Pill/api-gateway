@@ -32,6 +32,8 @@ public class RouteValidator {
             "/lifepill/v1/session/get-all-cached-employers",
             "/lifepill/v1/session/check",
             "/lifepill/v1/session/logout",
+            // WebSocket endpoints (authentication handled by WebSocket interceptor)
+            "/ws",
             // Swagger/API docs
             "/swagger-ui",
             "/v3/api-docs",

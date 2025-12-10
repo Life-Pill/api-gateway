@@ -555,7 +555,7 @@ circuitbreaker:
 cors:
   allowed-origins: ${CORS_ALLOWED_ORIGINS:*}
   allowed-methods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,PATCH,DELETE,OPTIONS}
-  allowed-headers: ${CORS_ALLOWED_HEADERS:Authorization,Content-Type,Accept,Origin,X-Requested-With,X-XSRF-TOKEN,X-Gateway-Source}
+  allowed-headers: ${CORS_ALLOWED_HEADERS:Authorization,Content-Type,Accept,Origin,X-Requested-With,X-XSRF-TOKEN,X-Gateway-Source,Sec-WebSocket-Protocol,Sec-WebSocket-Extensions,Sec-WebSocket-Key,Sec-WebSocket-Version}
   exposed-headers: ${CORS_EXPOSED_HEADERS:Authorization,X-Response-Time,X-Request-Id}
   allow-credentials: ${CORS_ALLOW_CREDENTIALS:false}
   max-age: ${CORS_MAX_AGE:3600}
