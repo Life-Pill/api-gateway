@@ -473,6 +473,17 @@ jwt:
                 name: notificationServiceCircuitBreaker
                 fallbackUri: forward:/fallback/notification
         
+        # Notification Service - Device Registration (FCM tokens)
+        - id: notification-devices
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/lifepill/v1/notifications/devices/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: notificationServiceCircuitBreaker
+                fallbackUri: forward:/fallback/notification
+        
         # OPENAPI/SWAGGER DOCUMENTATION ROUTES
         
         # User Auth Service - API Docs
