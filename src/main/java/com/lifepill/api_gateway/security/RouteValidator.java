@@ -118,6 +118,7 @@ public class RouteValidator {
             
             // Notification Service - Authenticated access without role enforcement
             Map.entry("/api/v1/notifications", new PathRoleConfig(null, null)),
+            Map.entry("/lifepill/v1/notifications", new PathRoleConfig(null, null)),
             
             // Mobile Orders - User authenticated access
             Map.entry("/lifepill/v1/mobile/orders", new PathRoleConfig("USER", null))

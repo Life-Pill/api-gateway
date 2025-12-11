@@ -277,6 +277,16 @@ public class GatewayRouteConfig {
                                 .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
                         .uri("lb://NOTIFICATION-SERVICE"))
 
+                // Notification Service - Device Registration (FCM tokens)
+                .route("notification-devices", r -> r
+                        .path("/lifepill/v1/notifications/devices/**")
+                        .filters(f -> f
+                                .circuitBreaker(c -> c
+                                        .setName("notificationServiceCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/notification"))
+                                .addRequestHeader("X-Gateway-Source", gatewayHeaderSource))
+                        .uri("lb://NOTIFICATION-SERVICE"))
+
                 // Mobile Orders API (Customer Service)
                 .route("mobile-orders-api", r -> r
                         .path("/lifepill/v1/mobile/orders/**")
