@@ -75,6 +75,18 @@ jwt:
             response-timeout: 30000
           order: -1
         
+        # Notification Service - Device Registration (FCM tokens) - High Priority
+        - id: notification-devices
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/lifepill/v1/notifications/devices/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: notificationServiceCircuitBreaker
+                fallbackUri: forward:/fallback/notification
+          order: 0
+
         # IDENTITY SERVICE - DIRECT AUTH (Highest Priority)
         - id: identity-service-direct-auth
           uri: lb://IDENTITY-SERVICE
@@ -473,16 +485,6 @@ jwt:
                 name: notificationServiceCircuitBreaker
                 fallbackUri: forward:/fallback/notification
         
-        # Notification Service - Device Registration (FCM tokens)
-        - id: notification-devices
-          uri: lb://NOTIFICATION-SERVICE
-          predicates:
-            - Path=/lifepill/v1/notifications/devices/**
-          filters:
-            - name: CircuitBreaker
-              args:
-                name: notificationServiceCircuitBreaker
-                fallbackUri: forward:/fallback/notification
         
         # OPENAPI/SWAGGER DOCUMENTATION ROUTES
         
